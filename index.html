@@ -2,219 +2,1398 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ApuntaFácil</title>
-  <style>
-    :root {
-      --primary: #6558d3;
-      --primary-dark: #5043bd;
-      --background: #f5f6fc;
-      --card: #ffffff;
-      --text: #25243a;
-      --muted: #73738a;
-      --border: #e6e6f0;
-      --success: #16845b;
-      --danger: #c83d52;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#315dc5">
+<title>ApuntaFácil — Foto a apuntes</title>
+
+<style>
+:root {
+  --blue: #315dc5;
+  --navy: #203c7a;
+  --pale: #edf3ff;
+  --ink: #202a3b;
+  --muted: #667085;
+  --line: #dce4f2;
+  --green: #17794b;
+  --yellow: #fff4d7;
+  --red: #b42318;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fc;
+  color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 700;
+}
+
+.app {
+  max-width: 760px;
+  margin: auto;
+  padding: 18px 14px 42px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 4px 0 20px;
+}
+
+.logo {
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
+  background: #dce8ff;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+}
+
+.brand {
+  font-size: 25px;
+  font-weight: 850;
+  letter-spacing: -.7px;
+  color: var(--navy);
+}
+
+.tag {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #eaf1ff, #f7f1ff);
+  border: 1px solid #dce5fa;
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-size: clamp(25px, 5vw, 34px);
+  line-height: 1.15;
+  margin: 0 0 9px;
+  letter-spacing: -.7px;
+}
+
+.hero p {
+  margin: 0;
+  color: #53617a;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 19px;
+  margin: 14px 0;
+  box-shadow: 0 5px 20px #243b6410;
+}
+
+.step {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--blue);
+  text-transform: uppercase;
+}
+
+.card h2 {
+  font-size: 20px;
+  margin: 3px 0 12px;
+}
+
+.drop {
+  border: 2px dashed #b9c9ed;
+  background: #f8faff;
+  border-radius: 18px;
+  text-align: center;
+  padding: 22px 14px;
+}
+
+.camera {
+  font-size: 36px;
+}
+
+.drop p {
+  color: var(--muted);
+  margin: 4px 0 13px;
+}
+
+.primary {
+  background: var(--blue);
+  color: white;
+  width: 100%;
+  box-shadow: 0 5px 12px #315dc52b;
+}
+
+.secondary {
+  background: #edf2ff;
+  color: var(--navy);
+}
+
+.outline {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--navy);
+}
+
+.small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  margin: 13px 0 6px;
+}
+
+textarea, select, input[type="text"] {
+  width: 100%;
+  border: 1px solid #cfd8e8;
+  border-radius: 13px;
+  padding: 12px;
+  background: white;
+  color: var(--ink);
+}
+
+textarea {
+  min-height: 145px;
+  resize: vertical;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.choice {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px;
+  background: white;
+  text-align: left;
+  font-weight: 600;
+  color: #43506a;
+}
+
+.choice.active {
+  background: #edf3ff;
+  border: 2px solid var(--blue);
+  color: var(--navy);
+  padding: 10px;
+}
+
+.choice span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.preview {
+  display: none;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 14px;
+  margin-top: 12px;
+  background: #eef1f6;
+}
+
+.notice {
+  background: var(--yellow);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.status {
+  display: none;
+  background: #edf3ff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.progress {
+  height: 8px;
+  background: #dce5fa;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress div {
+  height: 100%;
+  width: 0;
+  background: var(--blue);
+  transition: width .2s;
+}
+
+.result {
+  display: none;
+}
+
+.result h3 {
+  margin: 15px 0 6px;
+}
+
+.resultBody {
+  background: #f8faff;
+  border: 1px solid var(--line);
+  padding: 15px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+}
+
+.pill {
+  display: inline-block;
+  background: #e5f6ec;
+  color: #176b43;
+  border-radius: 99px;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.btnrow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btnrow button {
+  flex: 1;
+}
+
+/* MODO TDAH: PASTEL AZUL Y LILA */
+
+body.adhd-mode {
+  background: #f5f2ff;
+  --blue: #5269c9;
+  --navy: #373d78;
+  --line: #dedcf4;
+}
+
+body.adhd-mode .hero {
+  background: linear-gradient(135deg, #eaf2ff, #f1eaff);
+  border-color: #dcdafa;
+}
+
+body.adhd-mode .card {
+  box-shadow: 0 4px 16px #514b8a0c;
+}
+
+body.adhd-mode textarea,
+body.adhd-mode input,
+body.adhd-mode select {
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.adhd-toggle {
+  width: 100%;
+  margin-top: 12px;
+  background: #f0eaff;
+  color: #403b82;
+  border: 1px solid #d8cef8;
+}
+
+.adhd-toggle.active {
+  background: #ded6ff;
+  border: 2px solid #7764c7;
+  padding: 11px 15px;
+}
+
+.adhd-panel {
+  background: linear-gradient(135deg, #f5f2ff, #edf4ff);
+  border: 1px solid #ded8fb;
+  border-radius: 16px;
+  padding: 14px;
+  margin-top: 12px;
+}
+
+.adhd-panel h3 {
+  margin: 0 0 6px;
+  color: #373d78;
+}
+
+.timer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.timer-number {
+  font-size: clamp(34px, 9vw, 48px);
+  font-weight: 850;
+  text-align: center;
+  color: #373d78;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-state {
+  text-align: center;
+  color: #5b5a83;
+  font-weight: 700;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.timer-controls button {
+  flex: 1;
+}
+
+.study-checks label {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-weight: 500;
+  margin: 10px 0;
+}
+
+.study-checks input {
+  margin-top: 5px;
+  accent-color: #7161c5;
+}
+
+@media (min-width: 620px) {
+  .app {
+    padding: 28px 20px 50px;
+  }
+
+  .card {
+    padding: 23px;
+  }
+
+  .hero {
+    padding: 28px;
+  }
+
+  .options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<header class="top">
+  <div class="logo" aria-hidden="true">🧠</div>
+  <div>
+    <div class="brand">ApuntaFácil</div>
+    <div class="tag">Tu forma de estudiar, a tu manera ✨</div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>De una foto a unos apuntes más claros.</h1>
+  <p>Sube una página, extrae el texto automáticamente, revísalo y conviértelo en apuntes para repasar.</p>
+</section>
+
+<!-- PASO 1: FOTO Y OCR -->
+
+<section class="card">
+  <div class="step">Paso 1 · Añade tu página</div>
+  <h2>📸 Haz una foto o elige una imagen</h2>
+
+  <div class="drop">
+    <div class="camera">📷</div>
+    <strong>Tu libro, en una foto</strong>
+    <p>Mejor con buena luz, la página recta y el texto enfocado.</p>
+
+    <input id="photo" type="file" accept="image/*" capture="environment" class="hidden">
+
+    <div class="btnrow">
+      <button class="secondary" id="choose">Hacer foto / elegir imagen</button>
+      <button class="outline" id="demo">Probar ejemplo</button>
+    </div>
+
+    <img id="preview" class="preview" alt="Vista previa de la página elegida">
+    <div id="photoName" class="small"></div>
+
+    <div id="ocrStatus" class="status" aria-live="polite">
+      <strong id="statusText">Preparando lectura…</strong>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div id="progressPercent" class="small">0%</div>
+    </div>
+
+    <div id="ocrError" class="error" role="alert"></div>
+  </div>
+
+  <div class="notice">
+    La lectura de la imagen se hace en tu navegador con OCR. Revisa siempre el texto extraído: las fotos borrosas, tablas y fórmulas pueden dar errores.
+  </div>
+</section>
+
+<!-- PASO 2: ORGANIZAR APUNTES -->
+
+<section class="card">
+  <div class="step">Paso 2 · Revisa y organiza</div>
+  <h2>✍️ Texto reconocido</h2>
+  <p class="small">Cuando termine el OCR, el texto aparecerá aquí. Puedes corregirlo antes de crear los apuntes.</p>
+
+  <label for="subject">Asignatura</label>
+  <select id="subject">
+    <option>Ciencias naturales</option>
+    <option>Historia</option>
+    <option>Lengua</option>
+    <option>Matemáticas</option>
+    <option>Geografía</option>
+    <option>Otra asignatura</option>
+  </select>
+
+  <label for="school">Curso escolar</label>
+  <select id="school">
+    <option>Primaria</option>
+    <option>ESO</option>
+    <option>Bachillerato</option>
+    <option>Universidad</option>
+  </select>
+
+  <label>Formato de los apuntes</label>
+
+  <div class="options" id="formats">
+    <button class="choice active" data-format="short">⚡ Corto<span>Lo esencial</span></button>
+    <button class="choice" data-format="outline">🗂️ Esquema<span>Títulos y claves</span></button>
+    <button class="choice" data-format="visual">🎨 Visual<span>Bloques sencillos</span></button>
+    <button class="choice" data-format="complete">📚 Completo<span>Más detalle</span></button>
+  </div>
+
+  <button type="button" id="adhdToggle" class="adhd-toggle" aria-pressed="false">
+    🧠 Activar modo TDAH
+  </button>
+
+  <div id="adhdInfo" class="adhd-panel hidden" aria-live="polite">
+    <h3>Un paso cada vez 💜</h3>
+    <p style="margin:0">Al crear tus apuntes, se organizarán en bloques breves con ideas clave y frases fáciles de repasar. Puedes desactivar este modo cuando quieras.</p>
+  </div>
+
+  <label for="source">Texto original (editable)</label>
+  <textarea id="source" placeholder="El texto reconocido aparecerá aquí. También puedes pegarlo o escribirlo manualmente."></textarea>
+
+  <button id="make" class="primary" style="margin-top:12px">
+    ✨ Crear mis apuntes y preguntas
+  </button>
+  <div id="error" class="error" role="alert"></div>
+</section>
+
+<!-- PASO 3: RESULTADOS -->
+
+<section id="result" class="card result">
+  <div class="step">Paso 3 · ¡Listo para repasar!</div>
+  <h2>📝 Tus apuntes</h2>
+  <span class="pill">Revisa antes de estudiar</span>
+
+  <div id="resultBody" class="resultBody" style="margin-top:12px"></div>
+
+  <h3>🧠 Comprueba lo que recuerdas</h3>
+  <p class="small">Intenta responder antes de mostrar una posible respuesta.</p>
+  <div id="questions"></div>
+
+  <button id="copy" class="secondary" style="width:100%;margin-top:12px">Copiar apuntes</button>
+  <button id="reset" class="outline" style="width:100%;margin-top:9px">Empezar de nuevo</button>
+</section>
+
+<!-- TEMPORIZADOR Y PLAN DE ESTUDIO -->
+
+<section id="adhdTimerCard" class="card">
+  <div class="step">Herramientas de estudio</div>
+  <h2>⏳ Sesión de estudio tranquila</h2>
+  <p class="small">Configura el tiempo de concentración y el descanso. Puedes pausar o reiniciar cuando quieras.</p>
+
+  <div class="timer-grid">
+    <div>
+      <label for="focusMinutes">Minutos de estudio</label>
+      <input id="focusMinutes" type="number" min="1" max="120" value="15" style="width:100%">
+    </div>
+    <div>
+      <label for="breakMinutes">Minutos de descanso</label>
+      <input id="breakMinutes" type="number" min="1" max="60" value="5" style="width:100%">
+    </div>
+  </div>
+
+  <div class="adhd-panel">
+    <div id="timerState" class="timer-state">Listo para empezar</div>
+    <div id="timerDisplay" class="timer-number" role="timer" aria-live="off">15:00</div>
+
+    <div class="timer-controls">
+      <button type="button" id="timerStart" class="primary">▶ Empezar</button>
+      <button type="button" id="timerPause" class="secondary">Ⅱ Pausar</button>
+      <button type="button" id="timerReset" class="outline">↺ Reiniciar</button>
+    </div>
+
+    <p id="timerMessage" class="small" style="margin-bottom:0">Un objetivo pequeño también cuenta. 💜</p>
+  </div>
+
+  <h3 style="margin-top:18px">✅ Mi pequeño plan</h3>
+  <p class="small">Marca cada paso cuando lo termines.</p>
+
+  <div class="study-checks">
+    <label><input type="checkbox"> Preparar el material</label>
+    <label><input type="checkbox"> Elegir una sola parte para estudiar</label>
+    <label><input type="checkbox"> Repasar una idea importante</label>
+    <label><input type="checkbox"> Hacer una pausa y reconocer mi esfuerzo</label>
+  </div>
+</section>
+
+<!-- PASO 4: SIMULACRO -->
+
+<section id="examCard" class="card">
+  <div class="step">Paso 4 · Practica como en un examen</div>
+  <h2>📝 Simulacro de 20 preguntas</h2>
+  <p class="small">El test utiliza afirmaciones del texto que has pegado o extraído. Revisa que el OCR esté bien antes de empezar.</p>
+
+  <label for="topic">Tema que estás estudiando</label>
+  <input id="topic" type="text" placeholder="Ej.: fotosíntesis, la célula, la Revolución francesa…">
+
+  <label for="penalty">Penalización por errores</label>
+  <select id="penalty">
+    <option value="0.3333333333" selected>3 errores anulan 1 acierto</option>
+    <option value="0.25">4 errores anulan 1 acierto</option>
+    <option value="0.2">5 errores anulan 1 acierto</option>
+    <option value="0">Sin penalización</option>
+  </select>
+
+  <p class="small">Las preguntas en blanco no suman ni restan. Nota neta = aciertos − (errores × penalización elegida). Máximo 20 puntos.</p>
+
+  <button id="startExam" class="primary">Empezar simulacro</button>
+  <div id="examError" class="error" role="alert"></div>
+  <div id="examArea" class="hidden"></div>
+  <div id="examResults" class="hidden"></div>
+  <div id="videoHelp" class="hidden"></div>
+</section>
+
+<div class="footer">
+  ApuntaFácil · OCR y simulacro de práctica. Las preguntas se construyen a partir del texto proporcionado; no son un examen oficial ni una IA generativa. Verifica el contenido con tu material de clase.
+</div>
+
+</main>
+
+<script>
+const photo = document.getElementById('photo');
+const preview = document.getElementById('preview');
+const photoName = document.getElementById('photoName');
+
+const statusBox = document.getElementById('ocrStatus');
+const statusText = document.getElementById('statusText');
+const progressBar = document.getElementById('progressBar');
+const progressPercent = document.getElementById('progressPercent');
+
+document.getElementById('choose').addEventListener('click', () => photo.click());
+
+let format = 'short';
+let adhdMode = false;
+
+/* ACTIVAR Y DESACTIVAR EL MODO TDAH */
+
+document.getElementById('adhdToggle').addEventListener('click', () => {
+  adhdMode = !adhdMode;
+  document.body.classList.toggle('adhd-mode', adhdMode);
+
+  const button = document.getElementById('adhdToggle');
+  button.classList.toggle('active', adhdMode);
+  button.setAttribute('aria-pressed', String(adhdMode));
+
+  button.textContent = adhdMode
+    ? '💜 Modo TDAH activado · Desactivar'
+    : '🧠 Activar modo TDAH';
+
+  document.getElementById('adhdInfo')
+    .classList.toggle('hidden', !adhdMode);
+});
+
+/* SELECCIÓN DEL FORMATO */
+
+document.querySelectorAll('.choice').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.choice')
+      .forEach(item => item.classList.remove('active'));
+
+    button.classList.add('active');
+    format = button.dataset.format;
+  });
+});
+
+/* RECONOCIMIENTO DE TEXTO POR FOTO (OCR) */
+
+photo.addEventListener('change', async () => {
+  const file = photo.files && photo.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    document.getElementById('ocrError').textContent =
+      'Elige un archivo de imagen.';
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  photoName.textContent = file.name;
+
+  document.getElementById('ocrError').textContent = '';
+  statusBox.style.display = 'block';
+  statusText.textContent = 'Cargando lector de texto…';
+  progressBar.style.width = '0%';
+  progressPercent.textContent = '0%';
+
+  try {
+    if (!window.Tesseract) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(
+          new Error('No se pudo cargar el lector OCR. Comprueba tu conexión a internet y vuelve a intentarlo.')
+        );
+        document.head.appendChild(script);
+      });
     }
 
-    * {
-      box-sizing: border-box;
+    statusText.textContent = 'Leyendo la página…';
+
+    const result = await Tesseract.recognize(file, 'spa', {
+      logger: message => {
+        if (message.status) {
+          statusText.textContent =
+            message.status === 'recognizing text'
+              ? 'Reconociendo el texto…'
+              : message.status === 'loading language traineddata'
+                ? 'Descargando el idioma español…'
+                : 'Preparando OCR…';
+        }
+
+        if (typeof message.progress === 'number') {
+          const percent = Math.round(message.progress * 100);
+          progressBar.style.width = percent + '%';
+          progressPercent.textContent = percent + '%';
+        }
+      }
+    });
+
+    const extracted = (result.data.text || '').trim();
+
+    if (!extracted) {
+      throw new Error('No se detectó texto. Prueba con una foto más nítida y bien iluminada.');
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--background);
-      color: var(--text);
+    document.getElementById('source').value = extracted;
+    statusText.textContent = '¡Texto extraído! Revísalo en el cuadro de abajo.';
+    progressBar.style.width = '100%';
+    progressPercent.textContent = '100%';
+
+    document.getElementById('source').scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+
+  } catch (error) {
+    statusText.textContent = 'No se pudo leer la imagen.';
+    document.getElementById('ocrError').textContent =
+      error.message || 'Ha ocurrido un error al leer la imagen.';
+  }
+});
+
+/* EJEMPLO DE PRUEBA */
+
+document.getElementById('demo').addEventListener('click', () => {
+  document.getElementById('subject').value = 'Ciencias naturales';
+
+  document.getElementById('source').value =
+    'La fotosíntesis es el proceso por el cual las plantas fabrican su propio alimento. ' +
+    'Para ello necesitan luz solar, agua y dióxido de carbono. ' +
+    'Este proceso produce glucosa, que sirve de alimento a la planta, ' +
+    'y libera oxígeno a la atmósfera. ' +
+    'La clorofila es el pigmento verde que capta la energía de la luz solar.';
+
+  document.getElementById('source').scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  });
+});
+
+/* DIVIDIR EL TEXTO EN FRASES */
+
+function sentences(text) {
+  return (text.match(/[^.!?]+[.!?]?/g) || [])
+    .map(sentence => sentence.trim())
+    .filter(Boolean);
+}
+
+/* CREAR APUNTES */
+
+function makeNotes(text, selectedFormat) {
+  const originalSentences = sentences(text);
+
+  if (!originalSentences.length) return null;
+
+  const cleaned = originalSentences.map(sentence =>
+    sentence.replace(/\s+/g, ' ').trim()
+  );
+
+  const keywords = [
+    'es', 'son', 'significa', 'consiste',
+    'se produce', 'necesita', 'provoca',
+    'causa', 'importante', 'principal',
+    'por ejemplo', 'porque', 'resultado',
+    'permite', 'sirve', 'se define',
+    'se caracteriza'
+  ];
+
+  const scored = cleaned.map((sentence, index) => ({
+    sentence,
+    index,
+    score: keywords.reduce(
+      (score, keyword) =>
+        score + (sentence.toLowerCase().includes(keyword) ? 1 : 0),
+      0
+    ) + (sentence.length < 180 ? 1 : 0)
+  }));
+
+  let chosen;
+
+  if (selectedFormat === 'complete') {
+    chosen = cleaned;
+  } else if (selectedFormat === 'short') {
+    chosen = scored
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .slice(0, Math.max(1, Math.ceil(cleaned.length * 0.55)))
+      .sort((a, b) => a.index - b.index)
+      .map(item => item.sentence);
+  } else {
+    chosen = cleaned;
+  }
+
+  /* FORMATO ADAPTADO AL MODO TDAH */
+
+  if (adhdMode) {
+    const subject = document.getElementById('subject').value;
+
+    const blocks = cleaned.map(sentence => {
+      if (sentence.length <= 220) return [sentence];
+
+      return sentence
+        .match(/.{1,200}(?:\s|$)/g)
+        .map(part => part.trim())
+        .filter(Boolean);
+    }).flat();
+
+    let output =
+      '💜 ' + subject.toUpperCase() +
+      ' · APUNTES EN PEQUEÑOS PASOS\n\n';
+
+    output +=
+      '🎯 IDEA PRINCIPAL\n' +
+      'Lee un bloque cada vez. Después, intenta explicarlo con tus palabras.\n\n';
+
+    blocks.forEach((block, index) => {
+      output += (index + 1) + '. ' + block + '\n\n';
+    });
+
+    output +=
+      '🧠 PARA RECORDAR\n' +
+      '• Tapa el texto e intenta recordar una idea.\n' +
+      '• Descansa si lo necesitas.\n' +
+      '• Vuelve al texto original para comprobar los detalles.';
+
+    return {
+      out: output,
+      chosen: blocks
+    };
+  }
+
+  const subject = document.getElementById('subject').value;
+  let output = '📘 ' + subject.toUpperCase() + '\n\n';
+
+  if (selectedFormat === 'outline') {
+    output += 'IDEAS PRINCIPALES\n';
+    chosen.forEach(sentence => {
+      output += '• ' + sentence + '\n';
+    });
+
+  } else if (selectedFormat === 'visual') {
+    chosen.forEach((sentence, index) => {
+      output +=
+        (index === 0 ? '🔑 IDEA CLAVE\n' : '➡️ TAMBIÉN RECUERDA\n') +
+        sentence + '\n\n';
+    });
+
+  } else {
+    chosen.forEach(sentence => {
+      output += '• ' + sentence + '\n';
+    });
+  }
+
+  if (chosen.length < cleaned.length) {
+    output +=
+      '\n💡 Este formato es breve: compara con el texto original ' +
+      'para comprobar que no falte ningún detalle importante.';
+  }
+
+  return {
+    out: output,
+    chosen
+  };
+}
+
+/* MOSTRAR APUNTES Y PREGUNTAS DE REPASO */
+
+document.getElementById('make').addEventListener('click', () => {
+  const text = document.getElementById('source').value.trim();
+  const error = document.getElementById('error');
+
+  if (!text) {
+    error.textContent =
+      'Haz una foto para extraer el texto o pega/escribe el contenido.';
+    return;
+  }
+
+  error.textContent = '';
+
+  const result = makeNotes(text, format);
+
+  if (!result) {
+    error.textContent = 'No encuentro texto que pueda organizar.';
+    return;
+  }
+
+  document.getElementById('resultBody').textContent = result.out;
+
+  const questions = [];
+
+  if (result.chosen.length) {
+    questions.push({
+      q: '¿Cuál es una idea importante de estos apuntes?',
+      a: result.chosen[0]
+    });
+  }
+
+  if (result.chosen.length > 1) {
+    questions.push({
+      q: '¿Qué otra idea debes recordar?',
+      a: result.chosen[1]
+    });
+  }
+
+  questions.push({
+    q: '¿Qué concepto necesitas repasar o preguntar al profesor?',
+    a: 'Vuelve al libro y marca cualquier concepto que todavía no tengas claro.'
+  });
+
+  const root = document.getElementById('questions');
+  root.innerHTML = '';
+
+  questions.forEach((item, index) => {
+    const box = document.createElement('div');
+    box.style.cssText =
+      'border:1px solid #dce4f2;border-radius:14px;padding:12px;margin:9px 0';
+
+    const question = document.createElement('strong');
+    question.textContent = (index + 1) + '. ' + item.q;
+
+    const button = document.createElement('button');
+    button.className = 'outline';
+    button.textContent = 'Mostrar una posible respuesta';
+    button.style.cssText = 'display:block;margin-top:9px;font-size:13px';
+
+    const answer = document.createElement('p');
+    answer.className = 'small hidden';
+    answer.textContent = item.a;
+
+    button.addEventListener('click', () => {
+      answer.classList.toggle('hidden');
+
+      button.textContent = answer.classList.contains('hidden')
+        ? 'Mostrar una posible respuesta'
+        : 'Ocultar respuesta';
+    });
+
+    box.append(question, button, answer);
+    root.append(box);
+  });
+
+  const resultCard = document.getElementById('result');
+  resultCard.style.display = 'block';
+  resultCard.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+});
+
+/* COPIAR APUNTES */
+
+document.getElementById('copy').addEventListener('click', async () => {
+  const text = document.getElementById('resultBody').textContent;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copy').textContent = '✓ Copiado';
+
+  } catch (error) {
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('resultBody'));
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    document.getElementById('copy').textContent =
+      'Selecciona y copia el texto';
+  }
+});
+
+/* EMPEZAR DE NUEVO */
+
+document.getElementById('reset').addEventListener('click', () => {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('source').focus();
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});
+
+/* SIMULACRO DE 20 PREGUNTAS */
+
+let activeExam = [];
+
+function cleanExamText(text) {
+  return sentences(text)
+    .map(sentence => sentence.replace(/\s+/g, ' ').trim())
+    .filter(sentence => sentence.length >= 18);
+}
+
+function shuffle(array) {
+  const result = array.slice();
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
+document.getElementById('startExam').addEventListener('click', () => {
+  const error = document.getElementById('examError');
+  const area = document.getElementById('examArea');
+  const results = document.getElementById('examResults');
+  const videos = document.getElementById('videoHelp');
+
+  const pool = [
+    ...new Set(cleanExamText(document.getElementById('source').value))
+  ];
+
+  if (pool.length < 4) {
+    error.textContent =
+      'Necesito al menos 4 afirmaciones suficientemente completas en el texto para crear las opciones. Añade más contenido o usa “Probar ejemplo”.';
+    return;
+  }
+
+  error.textContent = '';
+  results.classList.add('hidden');
+  videos.classList.add('hidden');
+  area.classList.remove('hidden');
+  area.innerHTML = '';
+
+  const topic =
+    document.getElementById('topic').value.trim() ||
+    document.getElementById('subject').value;
+
+  const questions = [];
+
+  for (let i = 0; i < 20; i++) {
+    const correct = pool[i % pool.length];
+
+    const distractors = shuffle(
+      pool.filter(sentence => sentence !== correct)
+    ).slice(0, 3);
+
+    const options = shuffle([correct, ...distractors]);
+
+    questions.push({
+      prompt: '¿Cuál de estas afirmaciones aparece en el texto estudiado?',
+      options,
+      correct: options.indexOf(correct),
+      explanation: correct
+    });
+  }
+
+  activeExam = questions;
+
+  const intro = document.createElement('p');
+  intro.className = 'small';
+  intro.textContent =
+    'Tema: ' + topic +
+    ' · Pregunta 1 de 20. Puedes dejar respuestas en blanco. Al finalizar verás la corrección.';
+
+  area.append(intro);
+
+  const form = document.createElement('form');
+  form.id = 'examForm';
+
+  questions.forEach((question, index) => {
+    const box = document.createElement('fieldset');
+    box.style.cssText =
+      'border:1px solid #dce4f2;border-radius:14px;padding:12px;margin:12px 0';
+
+    const legend = document.createElement('legend');
+    legend.style.fontWeight = '800';
+    legend.textContent =
+      (index + 1) + '. ' + question.prompt;
+
+    box.append(legend);
+
+    question.options.forEach((option, optionIndex) => {
+      const label = document.createElement('label');
+      label.style.cssText =
+        'display:flex;gap:8px;align-items:flex-start;font-weight:400;margin:9px 0';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'q' + index;
+      radio.value = String(optionIndex);
+      radio.style.marginTop = '5px';
+
+      const span = document.createElement('span');
+      span.textContent = option;
+
+      label.append(radio, span);
+      box.append(label);
+    });
+
+    form.append(box);
+  });
+
+  const finish = document.createElement('button');
+  finish.type = 'submit';
+  finish.className = 'primary';
+  finish.textContent = 'Terminar y corregir examen';
+
+  form.append(finish);
+  area.append(form);
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+
+    let correct = 0;
+    let wrong = 0;
+    let blank = 0;
+
+    const answers = [];
+
+    questions.forEach((question, index) => {
+      const selected = form.querySelector(
+        'input[name="q' + index + '"]:checked'
+      );
+
+      const answer = selected ? Number(selected.value) : null;
+
+      if (answer === null) {
+        blank++;
+      } else if (answer === question.correct) {
+        correct++;
+      } else {
+        wrong++;
+      }
+
+      answers.push(answer);
+    });
+
+    const penalty = Number(document.getElementById('penalty').value);
+    const net = Math.max(0, Math.min(20, correct - wrong * penalty));
+    const score = net.toFixed(2).replace('.', ',');
+
+    results.innerHTML = '';
+    results.classList.remove('hidden');
+
+    const heading = document.createElement('h3');
+    heading.textContent = '📊 Resultado del simulacro';
+    results.append(heading);
+
+    const summary = document.createElement('p');
+
+    summary.innerHTML =
+      '<strong>Nota neta: ' + score +
+      ' / 20 (' + (net * 5).toFixed(1).replace('.', ',') +
+      '%)</strong><br>✅ Aciertos: ' + correct +
+      '<br>❌ Errores: ' + wrong +
+      '<br>➖ En blanco: ' + blank;
+
+    results.append(summary);
+
+    const note = document.createElement('p');
+    note.className = 'small';
+    note.textContent =
+      'Cálculo aplicado: ' + correct +
+      ' − (' + wrong + ' × ' +
+      penalty.toString().replace('.', ',') +
+      ') = ' + score +
+      '. La nota se limita a un mínimo de 0 y un máximo de 20.';
+
+    results.append(note);
+
+    const review = document.createElement('h3');
+    review.textContent = '📚 Corrección explicada';
+    results.append(review);
+
+    questions.forEach((question, index) => {
+      const box = document.createElement('div');
+      box.style.cssText =
+        'border:1px solid #dce4f2;border-radius:12px;padding:11px;margin:9px 0';
+
+      const paragraph = document.createElement('p');
+      paragraph.style.fontWeight = '700';
+
+      paragraph.textContent =
+        (index + 1) + '. ' +
+        (answers[index] === null
+          ? 'Sin responder'
+          : answers[index] === question.correct
+            ? 'Correcta'
+            : 'Incorrecta');
+
+      const detail = document.createElement('p');
+      detail.className = 'small';
+      detail.textContent = 'Respuesta correcta: ' + question.explanation;
+
+      box.append(paragraph, detail);
+      results.append(box);
+    });
+
+    const topicText =
+      document.getElementById('topic').value.trim() ||
+      document.getElementById('subject').value;
+
+    const link = document.createElement('a');
+
+    link.href =
+      'https://www.youtube.com/results?search_query=' +
+      encodeURIComponent(
+        topicText + ' explicación ' +
+        document.getElementById('school').value
+      );
+
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    link.textContent =
+      'Buscar vídeos de refuerzo en YouTube sobre «' +
+      topicText + '»';
+
+    link.style.cssText =
+      'display:block;margin:14px 0;color:#315dc5;font-weight:700';
+
+    videos.innerHTML = '';
+    videos.classList.remove('hidden');
+
+    const videoHeading = document.createElement('h3');
+    videoHeading.textContent = '🎥 Refuerza lo que has estudiado';
+
+    const videoText = document.createElement('p');
+    videoText.className = 'small';
+    videoText.textContent =
+      'Abre una búsqueda de vídeos del tema. ApuntaFácil todavía no selecciona ni verifica vídeos automáticamente.';
+
+    videos.append(videoHeading, videoText, link);
+
+    results.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  });
+
+  area.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+});
+
+/* TEMPORIZADOR CONFIGURABLE DE ESTUDIO Y DESCANSO */
+
+(() => {
+  const focusInput = document.getElementById('focusMinutes');
+  const breakInput = document.getElementById('breakMinutes');
+
+  const display = document.getElementById('timerDisplay');
+  const state = document.getElementById('timerState');
+  const message = document.getElementById('timerMessage');
+
+  let remaining = 900;
+  let phase = 'focus';
+  let interval = null;
+  let running = false;
+
+  function validMinutes(input, fallback, min, max) {
+    let number = parseInt(input.value, 10);
+
+    if (!Number.isFinite(number)) {
+      number = fallback;
     }
 
-    header {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 18px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    number = Math.max(min, Math.min(max, number));
+    input.value = number;
+
+    return number;
+  }
+
+  function render() {
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+
+    display.textContent =
+      String(minutes).padStart(2, '0') + ':' +
+      String(seconds).padStart(2, '0');
+
+    state.textContent =
+      phase === 'focus'
+        ? 'Tiempo de estudio'
+        : 'Tiempo de descanso';
+  }
+
+  function stop() {
+    if (interval !== null) {
+      clearInterval(interval);
     }
 
-    .header-content {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    interval = null;
+    running = false;
+  }
+
+  function reset() {
+    stop();
+
+    phase = 'focus';
+    remaining = validMinutes(focusInput, 15, 1, 120) * 60;
+
+    state.textContent = 'Listo para empezar';
+    message.textContent =
+      'Un objetivo pequeño también cuenta. 💜';
+
+    render();
+  }
+
+  function tick() {
+    if (remaining > 0) {
+      remaining--;
+      render();
+      return;
     }
 
-    .logo {
-      font-size: 25px;
-      font-weight: bold;
-      color: var(--primary);
+    stop();
+
+    if (phase === 'focus') {
+      phase = 'break';
+      remaining = validMinutes(breakInput, 5, 1, 60) * 60;
+
+      message.textContent =
+        '¡Buen trabajo! Ahora puedes descansar un poco. 🌿';
+
+    } else {
+      phase = 'focus';
+      remaining = validMinutes(focusInput, 15, 1, 120) * 60;
+
+      message.textContent =
+        'Descanso terminado. Empieza otra sesión cuando quieras. 💜';
     }
 
-    .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 4px;
+    render();
+  }
+
+  document.getElementById('timerStart').addEventListener('click', () => {
+    if (running) return;
+
+    if (remaining <= 0) {
+      remaining =
+        (phase === 'focus'
+          ? validMinutes(focusInput, 15, 1, 120)
+          : validMinutes(breakInput, 5, 1, 60)) * 60;
     }
 
-    nav {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-      max-width: 1000px;
-      margin: 15px auto 0;
-    }
+    running = true;
 
-    button,
-    .button {
-      font-family: inherit;
-      border: none;
-      border-radius: 10px;
-      padding: 11px 15px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background .2s, transform .1s;
-    }
+    message.textContent =
+      phase === 'focus'
+        ? 'Concéntrate en una sola tarea.'
+        : 'Puedes alejarte de la pantalla y descansar.';
 
-    button:active {
-      transform: scale(.98);
-    }
+    interval = setInterval(tick, 1000);
+    render();
+  });
 
-    .nav-button {
-      background: #f0effb;
-      color: var(--primary);
-    }
+  document.getElementById('timerPause').addEventListener('click', () => {
+    stop();
+    message.textContent =
+      'Temporizador en pausa. Continúa cuando estés listo/a.';
+  });
 
-    .nav-button.active,
-    .primary {
-      background: var(--primary);
-      color: white;
-    }
+  document.getElementById('timerReset').addEventListener('click', reset);
 
-    .primary:hover {
-      background: var(--primary-dark);
+  focusInput.addEventListener('change', () => {
+    if (!running && phase === 'focus') {
+      remaining = validMinutes(focusInput, 15, 1, 120) * 60;
+      render();
     }
+  });
 
-    .secondary {
-      background: #efedf9;
-      color: var(--primary);
+  breakInput.addEventListener('change', () => {
+    validMinutes(breakInput, 5, 1, 60);
+
+    if (!running && phase === 'break') {
+      remaining = Number(breakInput.value) * 60;
+      render();
     }
+  });
 
-    .danger {
-      background: #fff0f2;
-      color: var(--danger);
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 25px auto;
-      padding: 0 18px 40px;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-title {
-      margin: 0 0 8px;
-      font-size: 27px;
-    }
-
-    .page-description {
-      margin: 0 0 22px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 18px rgba(35, 30, 80, .035);
-    }
-
-    .card h2,
-    .card h3 {
-      margin-top: 0;
-    }
-
-    .drop-zone {
-      border: 2px dashed #c8c4ee;
-      border-radius: 14px;
-      padding: 30px 18px;
-      text-align: center;
-      background: #faf9ff;
-    }
-
-    .drop-zone .icon {
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
-
-    input[type="file"] {
-      max-width: 100%;
-      margin: 12px 0;
-    }
-
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font: inherit;
-      background: white;
-      color: var(--text);
-      outline: none;
-    }
-
-    input[type="text"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--primary);
-    }
-
-    textarea {
-      min-height: 220px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: bold;
-      margin: 13px 0 7px;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .status {
-      margin-top: 12px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .status.error {
-      color: var(--danger);
-    }
-
-    .status.success {
-      color: var
+  reset();
+})();
+</script>
+</body>
+</html>
