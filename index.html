@@ -1,2 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#315dc5">
+<title>ApuntaFácil</title>
 
+<style>
+:root {
+  --blue: #315dc5;
+  --navy: #203c7a;
+  --pale: #edf3ff;
+  --ink: #202a3b;
+  --muted: #667085;
+  --line: #dce4f2;
+  --bg: #f5f7fc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 system-ui, sans-serif;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 13px;
+  padding: 11px 14px;
+  font-weight: 750;
+}
+
+.app {
+  max-width: 900px;
+  margin: auto;
+  padding: 18px 14px 40px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 17px;
+  background: #dce8ff;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+}
+
+.brand {
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--navy);
+}
+
+.tag, .small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #eaf1ff, #f8f0ff);
+  border: 1px solid #dce5fa;
+  border-radius: 23px;
+  padding: 22px;
+  margin-bottom: 15px;
+}
+
+.hero h1 {
+  font-size: clamp(25px, 5vw, 35px);
+  line-height: 1.15;
+  margin: 0 0 10px;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px;
+  margin: 14px 0;
+  box-shadow: 0 5px 20px #243b6408;
+}
+
+.card h2 {
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.primary {
+  background: var(--blue);
+  color: white;
+  width: 100%;
+}
+
+.secondary {
+  background: #edf2ff;
+  color: var(--navy);
+}
+
+.outline {
+  background: white;
+  border: 1px solid var(--line);
+  color: var(--navy);
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  margin: 12px 0 6px;
+}
+
+input[type="text"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cfd8e8;
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+}
+
+textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.row > * {
+  flex: 1;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.nav button {
+  background: white;
+  color: var(--navy);
+  border: 1px solid var(--line);
+}
+
+.nav button.active {
+  background: var(--blue);
+  color: white;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.keyword {
+  background: #fff0a6;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  font-weight: 800;
+}
+
+.item {
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 12px;
+  margin: 9px 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.error {
+  color: #b42318;
+  font-size: 13px;
+}
+
+.notice {
+  background: #fff4d7;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.result {
+  background: #f8faff;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 14px;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 20px 0;
+}
+
+@media (min-width: 650px) {
+  .nav {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .app {
+    padding: 25px 20px 45px;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<header class="top">
+  <div class="logo">🧠</div>
+  <div>
+    <div class="brand">ApuntaFácil</div>
+    <div class="tag">Aprende a tu manera · Gratis</div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>De tus apuntes a aprender de verdad.</h1>
+  <p>Organiza tus apuntes, prepara exámenes y aprende jugando.</p>
+</section>
+
+<nav class="nav">
+  <button class="active" data-page="home">🏠 Inicio</button>
+  <button data-page="notes">📝 Apuntes</button>
+  <button data-page="exam">✅ Tests</button>
+  <button data-page="games">🎮 Juegos</button>
+  <button data-page="videos">🎥 Vídeos</button>
+  <button data-page="backup">💾 Datos</button>
+</nav>
 
