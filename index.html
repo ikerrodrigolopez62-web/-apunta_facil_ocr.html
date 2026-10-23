@@ -260,3 +260,558 @@ textarea {
   <button data-page="backup">💾 Datos</button>
 </nav>
 
+<script>
+const $ = id => document.getElementById(id);
+
+let notes = JSON.parse(localStorage.getItem("apuntaFacilNotes") || "[]");
+let examQuestions = [];
+let flashcards = [];
+let currentCard = 0;
+
+const tips = [
+  "Divide el tema en pequeñas partes y descansa entre sesiones.",
+  "Explica lo que has aprendido con tus propias palabras.",
+  "Haz una pausa breve cuando notes que te cuesta concentrarte.",
+  "Repasa tus apuntes e intenta recordar las ideas principales.",
+  "Estudiar un poco cada día puede ayudarte a organizarte."
+];
+
+function saveData() {
+  localStorage.setItem("apuntaFacilNotes", JSON.stringify(notes));
+}
+
+function escapeHTML(text) {
+  return String(text).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+/* NAVEGACIÓN */
+function showPage(pageId) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === pageId);
+  });
+
+  document.querySelectorAll("[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === pageId);
+  });
+
+  if (pageId === "notes") renderNotes();
+  if (pageId === "exam" || pageId === "games") updateNoteSelectors();
+}
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.go));
+});
+
+/* CONSEJOS */
+if ($("newTip")) {
+  $("newTip").addEventListener("click", () => {
+    $("studyTip").textContent =
+      tips[Math.floor(Math.random() * tips.length)];
+  });
+}
+
+/* FORMATO DE TEXTO */
+if ($("boldBtn")) {
+  $("boldBtn").addEventListener("click", () => {
+    wrapSelection("**");
+  });
+}
+
+if ($("highlightBtn")) {
+  $("highlightBtn").addEventListener("click", () => {
+    const area = $("noteText");
+    const start = area.selectionStart;
+    const end = area.selectionEnd;
+
+    if (start === end) {
+      alert("Selecciona primero el texto que quieres resaltar.");
+      return;
+    }
+
+    const selected = area.value.slice(start, end);
+    area.setRangeText("🟨 " + selected + " 🟨", start, end, "select");
+    area.focus();
+  });
+}
+
+function wrapSelection(marker) {
+  const area = $("noteText");
+  const start = area.selectionStart;
+  const end = area.selectionEnd;
+
+  if (start === end) {
+    alert("Selecciona primero el texto.");
+    return;
+  }
+
+  const selected = area.value.slice(start, end);
+  area.setRangeText(marker + selected + marker, start, end, "select");
+  area.focus();
+}
+
+/* DESTACAR PALABRAS CLAVE */
+if ($("organizeBtn")) {
+  $("organizeBtn").addEventListener("click", () => {
+    const text = $("noteText").value.trim();
+
+    if (!text) {
+      alert("Escribe o importa primero tus apuntes.");
+      return;
+    }
+
+    const words = text
+      .toLowerCase()
+      .match(/\b[\p{L}]{5,}\b/gu) || [];
+
+    const stopWords = new Set([
+      "porque", "cuando", "donde", "desde", "hasta",
+      "entre", "sobre", "también", "pueden", "puede",
+      "estos", "estas", "ellos", "ellas", "sería",
+      "tiene", "tienen", "hacer", "muchos", "muchas"
+    ]);
+
+    const counts = {};
+
+    words.forEach(word => {
+      if (!stopWords.has(word)) {
+        counts[word] = (counts[word] || 0) + 1;
+      }
+    });
+
+    const keywords = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(item => item[0]);
+
+    if (!keywords.length) {
+      alert("No he encontrado palabras clave suficientes.");
+      return;
+    }
+
+    alert("Palabras clave detectadas:\n\n" + keywords.join(", "));
+  });
+}
+
+/* GUARDAR APUNTES */
+if ($("saveNote")) {
+  $("saveNote").addEventListener("click", () => {
+    const title = $("noteTitle").value.trim();
+    const text = $("noteText").value.trim();
+
+    if (!title || !text) {
+      alert("Añade un título y escribe el contenido del apunte.");
+      return;
+    }
+
+    notes.push({
+      id: Date.now().toString(),
+      title,
+      subject: $("noteSubject").value.trim(),
+      text,
+      level: $("level") ? $("level").value : "",
+      date: new Date().toISOString()
+    });
+
+    saveData();
+    renderNotes();
+    updateNoteSelectors();
+
+    $("noteTitle").value = "";
+    $("noteSubject").value = "";
+    $("noteText").value = "";
+
+    alert("¡Apunte guardado! 💾");
+  });
+}
+
+function renderNotes() {
+  const list = $("notesList");
+  if (!list) return;
+
+  const search = ($("searchNotes")?.value || "").toLowerCase();
+
+  const filtered = notes.filter(note =>
+    (note.title + " " + note.subject + " " + note.text)
+      .toLowerCase().includes(search)
+  );
+
+  if (!filtered.length) {
+    list.innerHTML = "<p>Aún no hay apuntes guardados.</p>";
+    return;
+  }
+
+  list.innerHTML = filtered.map(note => `
+    <article class="panel">
+      <h3>${escapeHTML(note.title)}</h3>
+      <p>${escapeHTML(note.subject || "Sin asignatura")}</p>
+      <p>${escapeHTML(note.text.slice(0, 180))}${note.text.length > 180 ? "…" : ""}</p>
+      <button data-open-note="${escapeHTML(note.id)}">Abrir</button>
+      <button data-delete-note="${escapeHTML(note.id)}">Eliminar</button>
+    </article>
+  `).join("");
+
+  list.querySelectorAll("[data-open-note]").forEach(button => {
+    button.addEventListener("click", () => {
+      const note = notes.find(n => n.id === button.dataset.openNote);
+      if (!note) return;
+
+      $("noteTitle").value = note.title;
+      $("noteSubject").value = note.subject;
+      $("noteText").value = note.text;
+      showPage("notes");
+    });
+  });
+
+  list.querySelectorAll("[data-delete-note]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (!confirm("¿Quieres eliminar este apunte?")) return;
+
+      notes = notes.filter(n => n.id !== button.dataset.deleteNote);
+      saveData();
+      renderNotes();
+      updateNoteSelectors();
+    });
+  });
+}
+
+if ($("searchNotes")) {
+  $("searchNotes").addEventListener("input", renderNotes);
+}
+
+/* LISTAS DE APUNTES PARA TESTS Y JUEGOS */
+function updateNoteSelectors() {
+  ["examNote", "gameNote"].forEach(id => {
+    const select = $(id);
+    if (!select) return;
+
+    const previous = select.value;
+
+    select.innerHTML = notes.length
+      ? notes.map(note =>
+          `<option value="${escapeHTML(note.id)}">${escapeHTML(note.title)}</option>`
+        ).join("")
+      : '<option value="">Guarda primero un apunte</option>';
+
+    if (notes.some(note => note.id === previous)) {
+      select.value = previous;
+    }
+  });
+}
+
+/* CREAR TEST */
+if ($("startExam")) {
+  $("startExam").addEventListener("click", () => {
+    const note = notes.find(n => n.id === $("examNote").value);
+
+    if (!note) {
+      alert("Guarda un apunte antes de crear un test.");
+      return;
+    }
+
+    const sentences = note.text
+      .replace(/\n+/g, " ")
+      .split(/[.!?]+/)
+      .map(s => s.trim())
+      .filter(s => s.split(/\s+/).length >= 5);
+
+    if (sentences.length < 2) {
+      alert("Necesitas al menos dos frases suficientemente largas.");
+      return;
+    }
+
+    examQuestions = sentences
+      .slice()
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Number($("questionCount").value));
+
+    renderExam();
+  });
+}
+
+function renderExam() {
+  const area = $("examArea");
+
+  area.innerHTML = `
+    <h3>Tu test</h3>
+    <form id="examForm">
+      ${examQuestions.map((sentence, index) => `
+        <fieldset class="panel">
+          <legend>Pregunta ${index + 1}</legend>
+          <p>${escapeHTML(sentence)}</p>
+          <label>
+            <input type="radio" name="q${index}" value="yes" required>
+            Lo entiendo y lo recuerdo
+          </label>
+          <label>
+            <input type="radio" name="q${index}" value="no">
+            Necesito repasarlo
+          </label>
+        </fieldset>
+      `).join("")}
+      <button type="submit">Corregir test</button>
+    </form>
+    <div id="examResult" aria-live="polite"></div>
+  `;
+
+  $("examForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const form = new FormData(event.target);
+    let correct = 0;
+
+    examQuestions.forEach((_, index) => {
+      if (form.get("q" + index) === "yes") correct++;
+    });
+
+    $("examResult").innerHTML = `
+      <div class="panel">
+        <h3>Resultado: ${correct} de ${examQuestions.length}</h3>
+        <p>Estas preguntas son de autoevaluación, no de verdadero o falso.
+        Repasa las frases que marcaste como pendientes.</p>
+      </div>
+    `;
+  });
+}
+
+/* JUEGO DE TARJETAS */
+if ($("startFlashcards")) {
+  $("startFlashcards").addEventListener("click", () => {
+    const note = notes.find(n => n.id === $("gameNote").value);
+
+    if (!note) {
+      alert("Guarda un apunte antes de jugar.");
+      return;
+    }
+
+    flashcards = note.text
+      .split(/[.!?\n]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 15);
+
+    currentCard = 0;
+
+    if (!flashcards.length) {
+      alert("Este apunte no tiene suficiente texto para crear tarjetas.");
+      return;
+    }
+
+    renderFlashcard();
+  });
+}
+
+function renderFlashcard() {
+  const area = $("gameArea");
+
+  if (currentCard >= flashcards.length) {
+    area.innerHTML = `
+      <div class="panel">
+        <h3>🎉 ¡Has terminado!</h3>
+        <button id="restartCards">Jugar otra vez</button>
+      </div>
+    `;
+
+    $("restartCards").addEventListener("click", () => {
+      currentCard = 0;
+      renderFlashcard();
+    });
+    return;
+  }
+
+  area.innerHTML = `
+    <div class="panel">
+      <p>Tarjeta ${currentCard + 1} de ${flashcards.length}</p>
+      <h3>Lee y recuerda esta idea:</h3>
+      <p>${escapeHTML(flashcards[currentCard])}</p>
+      <button id="nextCard">Siguiente ➡️</button>
+    </div>
+  `;
+
+  $("nextCard").addEventListener("click", () => {
+    currentCard++;
+    renderFlashcard();
+  });
+}
+
+/* BUSCAR VÍDEOS */
+if ($("searchVideos")) {
+  $("searchVideos").addEventListener("click", () => {
+    const subject = $("videoSubject").value.trim() ||
+      ($("subject")?.value.trim() || "");
+
+    if (!subject) {
+      alert("Escribe una asignatura o tema.");
+      return;
+    }
+
+    const level = $("level")?.value || "";
+    const query = encodeURIComponent(
+      subject + " explicación educativa " + level
+    );
+
+    $("videoResults").innerHTML = `
+      <div class="panel">
+        <p>Resultados para: ${escapeHTML(subject)} (${escapeHTML(level)})</p>
+        <a href="https://www.youtube.com/results?search_query=${query}"
+           target="_blank" rel="noopener noreferrer">
+          ▶️ Ver vídeos educativos en YouTube
+        </a>
+      </div>
+    `;
+  });
+}
+
+/* EXPORTAR COPIA DE SEGURIDAD */
+if ($("exportData")) {
+  $("exportData").addEventListener("click", () => {
+    const backup = {
+      app: "ApuntaFácil",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      notes
+    };
+
+    const blob = new Blob(
+      [JSON.stringify(backup, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "apuntafacil-copia.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+
+    $("backupStatus").textContent = "Copia de seguridad preparada.";
+  });
+}
+
+/* IMPORTAR COPIA DE SEGURIDAD */
+if ($("importData")) {
+  $("importData").addEventListener("click", async () => {
+    const file = $("importFile").files[0];
+
+    if (!file) {
+      alert("Selecciona primero un archivo JSON.");
+      return;
+    }
+
+    try {
+      const data = JSON.parse(await file.text());
+      const importedNotes = Array.isArray(data) ? data : data.notes;
+
+      if (!Array.isArray(importedNotes) ||
+          !importedNotes.every(n =>
+            n &&
+            typeof n.title === "string" &&
+            typeof n.text === "string"
+          )) {
+        throw new Error("Formato de copia no válido.");
+      }
+
+      if (!confirm("La importación sustituirá los apuntes actuales. ¿Continuar?")) {
+        return;
+      }
+
+      notes = importedNotes.map(note => ({
+        id: String(note.id || Date.now() + Math.random()),
+        title: note.title,
+        subject: String(note.subject || ""),
+        text: note.text,
+        level: String(note.level || ""),
+        date: note.date || new Date().toISOString()
+      }));
+
+      saveData();
+      renderNotes();
+      updateNoteSelectors();
+
+      $("backupStatus").textContent = "Copia importada correctamente.";
+    } catch (error) {
+      $("backupStatus").textContent =
+        "No se pudo importar la copia. Comprueba que sea un JSON válido.";
+    }
+  });
+}
+
+/* BORRAR TODOS LOS APUNTES */
+if ($("deleteAll")) {
+  $("deleteAll").addEventListener("click", () => {
+    if (!confirm("¿Seguro que quieres borrar todos los apuntes?")) return;
+
+    notes = [];
+    saveData();
+    renderNotes();
+    updateNoteSelectors();
+
+    $("backupStatus").textContent = "Se han borrado los apuntes.";
+  });
+}
+
+/* OCR: RECONOCIMIENTO DE TEXTO EN IMÁGENES */
+if ($("ocrBtn")) {
+  $("ocrBtn").addEventListener("click", async () => {
+    const file = $("imageInput").files[0];
+
+    if (!file) {
+      alert("Selecciona una foto primero.");
+      return;
+    }
+
+    if (!window.Tesseract) {
+      $("ocrStatus").textContent =
+        "No se ha cargado el OCR. Comprueba la conexión a internet y recarga la página.";
+      return;
+    }
+
+    $("ocrBtn").disabled = true;
+    $("ocrStatus").textContent = "Leyendo la foto... Puede tardar un poco.";
+
+    try {
+      const result = await Tesseract.recognize(file, "spa", {
+        logger: message => {
+          if (message.status === "recognizing text") {
+            $("ocrStatus").textContent =
+              "Reconociendo texto: " +
+              Math.round((message.progress || 0) * 100) + "%";
+          }
+        }
+      });
+
+      const text = result.data.text.trim();
+
+      if (!text) {
+        $("ocrStatus").textContent =
+          "No se ha encontrado texto legible en la imagen.";
+      } else {
+        $("noteText").value +=
+          ($("noteText").value ? "\n\n" : "") + text;
+
+        $("ocrStatus").textContent =
+          "¡Texto reconocido! Revísalo por si hay errores.";
+      }
+    } catch (error) {
+      $("ocrStatus").textContent =
+        "No se ha podido leer la foto. Prueba con una imagen más nítida.";
+    } finally {
+      $("ocrBtn").disabled = false;
+    }
+  });
+}
+
+/* INICIO */
+renderNotes();
+updateNoteSelectors();
+</script>
