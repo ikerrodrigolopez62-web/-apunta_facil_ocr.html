@@ -25,7 +25,7 @@ Por eso, ApuntaFácil OCR nace con la intención de ayudar a simplificar el acce
 
 ## Configuración del asistente
 
-El enlace «Tutor IA» abre el Worker de `Apuntafacil-IA` (`https://apuntafacil-ia.ikerrodrigolopez62.workers.dev`) en una pestaña aparte. Si se quiere activar también el asistente integrado en esta página, configura la URL pública `/api/chat` en `meta[name="apuntafacil-ai-endpoint"]` de `index.html`. La clave de Gemini debe guardarse como secreto del Worker en Cloudflare; no la añadas al HTML ni al repositorio. En la vista local de `localhost:8000`, el asistente integrado apunta automáticamente al Worker de `localhost:8787`.
+El enlace «Tutor IA» abre el Worker de `Apuntafacil-IA` (`https://apuntafacil-ia.ikerrodrigolopez62.workers.dev`) en una pestaña aparte. El asistente integrado de esta página usa el endpoint público `/api/chat` configurado en `meta[name="apuntafacil-ai-endpoint"]` de `index.html`. La clave de Gemini debe guardarse como secreto del Worker en Cloudflare; no la añadas al HTML ni al repositorio. En la vista local de `localhost:8000`, el asistente integrado apunta automáticamente al Worker de `localhost:8787`.
 
 ## 👨‍🎓 ¿A quién va dirigido?
 

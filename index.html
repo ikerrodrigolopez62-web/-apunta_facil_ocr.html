@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#315dc5">
-<meta name="apuntafacil-ai-endpoint" content="">
+<meta name="apuntafacil-ai-endpoint" content="https://apuntafacil-ia.ikerrodrigolopez62.workers.dev/api/chat">
 <title>ApuntaFácil — Foto a apuntes</title>
 
 <style>
@@ -1672,7 +1672,7 @@ document.getElementById('startExam').addEventListener('click', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, provider: 'gemini' }),
-        signal: AbortSignal.timeout(30000)
+        signal: AbortSignal.timeout(55000)
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo consultar la IA.');
